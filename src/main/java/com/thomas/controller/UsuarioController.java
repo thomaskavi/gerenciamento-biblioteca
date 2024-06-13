@@ -35,18 +35,7 @@ public class UsuarioController {
 
   @PutMapping("/{id}")
   public ResponseEntity<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuarioDetails) {
-    Optional<Usuario> usuario = usuarioService.findById(id);
-    if (usuario.isPresent()) {
-      Usuario updatedUsuario = usuario.get();
-      updatedUsuario.setNome(usuarioDetails.getNome());
-      updatedUsuario.setEmail(usuarioDetails.getEmail());
-      updatedUsuario.setTelefone(usuarioDetails.getTelefone());
-      updatedUsuario.setCpf(usuarioDetails.getCpf());
-      updatedUsuario.setSenha(usuarioDetails.getSenha());
-      return ResponseEntity.ok(usuarioService.save(updatedUsuario));
-    } else {
-      return ResponseEntity.notFound().build();
-    }
+    return usuarioService.updateUsuario(id, usuarioDetails);
   }
 
   @DeleteMapping("/{id}")

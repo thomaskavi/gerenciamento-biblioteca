@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.thomas.entity.Usuario;
@@ -29,5 +30,20 @@ public class UsuarioService {
 
   public void deleteById(Long id) {
     usuarioRepository.deleteById(id);
+  }
+
+  public ResponseEntity<Usuario> updateUsuario(Long id, Usuario usuarioDetails) {
+    Optional<Usuario> usuario = usuarioRepository.findById(id);
+    if (usuario.isPresent()) {
+      Usuario updatedUsuario = usuario.get();
+      updatedUsuario.setNome(usuarioDetails.getNome());
+      updatedUsuario.setEmail(usuarioDetails.getEmail());
+      updatedUsuario.setTelefone(usuarioDetails.getTelefone());
+      updatedUsuario.setCpf(usuarioDetails.getCpf());
+      updatedUsuario.setSenha(usuarioDetails.getSenha());
+      return ResponseEntity.ok(usuarioRepository.save(updatedUsuario));
+    } else {
+      return ResponseEntity.notFound().build();
+    }
   }
 }
