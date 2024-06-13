@@ -1,55 +1,57 @@
 package com.thomas.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.thomas.entity.Usuario;
 import com.thomas.service.UsuarioService;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PutMapping;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
+  @Autowired
   private UsuarioService usuarioService;
 
-  @Autowired
-  public UsuarioController(UsuarioService usuarioService) {
-    this.usuarioService = usuarioService;
-  }
-
   @GetMapping
-  public List<Usuario> listarUsuarios() {
-    return usuarioService.listarUsuarios();
+  public List<Usuario> getAllUsuarios() {
+    return usuarioService.findAll();
   }
 
   @GetMapping("/{id}")
-  public Usuario buscarUsuario(@PathVariable Long id) {
-    return usuarioService.buscarUsuarioPorId(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+  public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
+    Optional<Usuario> usuario = usuarioService.findById(id);
+    return usuario.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
   }
 
   @PostMapping
-  public Usuario salvarUsuario(@RequestBody Usuario usuario) {
-    return usuarioService.salvarUsuario(usuario);
+  public Usuario createUsuario(@RequestBody Usuario usuario) {
+    return usuarioService.save(usuario);
   }
 
   @PutMapping("/{id}")
-  public Usuario atualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
-    return usuarioService.atualizarUsuario(id, usuario);
+  public ResponseEntity<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuarioDetails) {
+    Optional<Usuario> usuario = usuarioService.findById(id);
+    if (usuario.isPresent()) {
+      Usuario updatedUsuario = usuario.get();
+      updatedUsuario.setNome(usuarioDetails.getNome());
+      updatedUsuario.setEmail(usuarioDetails.getEmail());
+      updatedUsuario.setTelefone(usuarioDetails.getTelefone());
+      updatedUsuario.setCpf(usuarioDetails.getCpf());
+      updatedUsuario.setSenha(usuarioDetails.getSenha());
+      return ResponseEntity.ok(usuarioService.save(updatedUsuario));
+    } else {
+      return ResponseEntity.notFound().build();
+    }
   }
 
   @DeleteMapping("/{id}")
-  public void deletarUsuario(@PathVariable Long id) {
-    usuarioService.deletarUsuario(id);
+  public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
+    usuarioService.deleteById(id);
+    return ResponseEntity.noContent().build();
   }
 }

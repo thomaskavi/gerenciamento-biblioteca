@@ -11,40 +11,23 @@ import com.thomas.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
-  private UsuarioRepository usuarioRepository;
 
   @Autowired
-  public UsuarioService(UsuarioRepository usuarioRepository) {
-    this.usuarioRepository = usuarioRepository;
-  }
+  private UsuarioRepository usuarioRepository;
 
-  public List<Usuario> listarUsuarios() {
+  public List<Usuario> findAll() {
     return usuarioRepository.findAll();
   }
 
-  public Optional<Usuario> buscarUsuarioPorId(Long id) {
+  public Optional<Usuario> findById(Long id) {
     return usuarioRepository.findById(id);
   }
 
-  public Usuario salvarUsuario(Usuario usuario) {
+  public Usuario save(Usuario usuario) {
     return usuarioRepository.save(usuario);
   }
 
-  public void deletarUsuario(Long id) {
+  public void deleteById(Long id) {
     usuarioRepository.deleteById(id);
-  }
-
-  public Usuario atualizarUsuario(Long id, Usuario usuarioAtualizado) {
-    Usuario usuarioExistente = usuarioRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-    usuarioExistente.setNome(usuarioAtualizado.getNome());
-    usuarioExistente.setEmail(usuarioAtualizado.getEmail());
-    usuarioExistente.setTelefone(usuarioAtualizado.getTelefone());
-    usuarioExistente.setCpf(usuarioAtualizado.getCpf());
-    usuarioExistente.setSenha(usuarioAtualizado.getSenha());
-
-    return usuarioRepository.save(usuarioExistente);
-
   }
 }
